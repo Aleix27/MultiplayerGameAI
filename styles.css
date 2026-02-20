@@ -298,7 +298,10 @@ button:hover {
 
 /* LANDSCAPE ENFORCEMENT */
 #portrait-warning {
-    display: none;
+    display: flex;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -313,6 +316,7 @@ button:hover {
     text-align: center;
     font-size: 1.5rem;
     padding: 20px;
+    transition: opacity 0.5s;
 }
 
 #portrait-warning svg {
@@ -339,7 +343,9 @@ button:hover {
 
 @media screen and (orientation: portrait) and (max-width: 900px) {
     #portrait-warning {
-        display: flex;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
     }
 
     #ui,
