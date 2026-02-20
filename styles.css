@@ -296,6 +296,59 @@ button:hover {
     margin-bottom: 20px;
 }
 
+/* LANDSCAPE ENFORCEMENT */
+#portrait-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 99999;
+    color: #fff;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 20px;
+}
+
+#portrait-warning svg {
+    width: 80px;
+    height: 80px;
+    fill: #00ffff;
+    margin-bottom: 20px;
+    animation: rotatePhone 2s infinite ease-in-out;
+}
+
+@keyframes rotatePhone {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(-90deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@media screen and (orientation: portrait) and (max-width: 900px) {
+    #portrait-warning {
+        display: flex;
+    }
+
+    #ui,
+    #touchControls,
+    #introScreen {
+        display: none !important;
+    }
+}
+
 #joystickBase {
     width: 120px;
     height: 120px;
@@ -394,6 +447,7 @@ button:hover {
     font-size: 1.2rem !important;
     color: var(--text-muted);
 }
+
 /* Player Setup & Lobby Specifics */
 .setup-container {
     background: rgba(255, 255, 255, 0.05);
@@ -462,7 +516,7 @@ button:hover {
 }
 
 select {
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     color: #fff;
     border: 1px solid var(--primary);
     padding: 8px 15px;
@@ -472,11 +526,16 @@ select {
     outline: none;
 }
 
-.hidden-host { display: none !important; }
-.hidden-guest { display: none !important; }
+.hidden-host {
+    display: none !important;
+}
+
+.hidden-guest {
+    display: none !important;
+}
 
 /* Ensure right alignment for scoreboard */
-.header > div {
+.header>div {
     display: flex;
     flex-direction: column;
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,32 +14,42 @@
     <!-- WebRTC PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
+
 <body>
+    <div id="portrait-warning">
+        <svg viewBox="0 0 24 24">
+            <path
+                d="M16 1H8C6.9 1 6 1.9 6 3v18c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-4 20c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm3.25-3H8.75V4h6.5v14z" />
+        </svg>
+        <span>Gira el teu dispositiu<br>per jugar 🔄</span>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
 
     <!-- Pre-Lobby: Profile Setup -->
     <div id="introScreen" class="overlay">
         <h1>Lumina Arena</h1>
         <p class="tagline">Tria el teu perfil abans d'entrar a la sorra.</p>
-        
+
         <div id="profileSetup" class="setup-container">
             <input type="text" id="nicknameInput" placeholder="El teu Nickname..." maxlength="12">
-            
+
             <p style="margin: 15px 0 5px 0; font-size: 1.1rem;">Selecciona Color:</p>
             <div id="colorSelector" class="color-options">
-                <div class="color-btn active" data-color="#00ffff" style="background-color: #00ffff; box-shadow: 0 0 10px #00ffff;"></div>
+                <div class="color-btn active" data-color="#00ffff"
+                    style="background-color: #00ffff; box-shadow: 0 0 10px #00ffff;"></div>
                 <div class="color-btn" data-color="#ff00ff" style="background-color: #ff00ff;"></div>
                 <div class="color-btn" data-color="#ffff00" style="background-color: #ffff00;"></div>
                 <div class="color-btn" data-color="#ff5500" style="background-color: #ff5500;"></div>
                 <div class="color-btn" data-color="#00ff88" style="background-color: #00ff88;"></div>
             </div>
         </div>
-        
+
         <div id="lobbyOptions" class="button-group">
             <button id="hostBtn">Crear Partida (Host)</button>
             <button id="joinBtn">Unir-se (Join)</button>
         </div>
-        
+
         <!-- Join input -->
         <div id="joinRoom" class="hidden">
             <input type="text" id="joinInput" placeholder="Introdueix codi...">
@@ -53,14 +64,11 @@
         <div class="room-info">
             Codi de Sala: <span id="roomIdDisplay">...</span>
         </div>
-        
+
         <div id="matchOptions" class="setup-container hidden-guest">
-            <p style="margin-bottom: 5px;">Temps de partida:</p>
-            <select id="timeSelectInput">
-                <option value="60">1 Minut</option>
-                <option value="120" selected>2 Minuts</option>
-                <option value="300">5 Minuts</option>
-            </select>
+            <p style="margin-bottom: 5px;">Temps de partida (segons):</p>
+            <input type="number" id="timeSelectInput" value="120" min="30" max="600"
+                style="width: 100px; text-align: center; font-size: 1.2rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--primary); padding: 5px; border-radius: 6px;">
         </div>
 
         <div id="playerListContainer" class="player-list">
@@ -77,34 +85,44 @@
             <!-- Left Header -->
             <div>
                 <h1 class="ingame-title">Lumina Arena</h1>
-                <div id="timerDisplay" style="font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px #ff0055; margin-top: 5px;">02:00</div>
+                <div id="timerDisplay"
+                    style="font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px #ff0055; margin-top: 5px;">
+                    02:00</div>
             </div>
-            
+
             <!-- Right Header: Leaderboard -->
             <div style="display:flex; flex-direction:column; align-items: flex-end;">
-                <div style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Rànquing</div>
+                <div
+                    style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">
+                    Rànquing</div>
                 <div id="pvpScoreboard" style="display:flex; flex-direction:column; gap: 5px; align-items: flex-end;">
                     <!-- Player scores appended here dynamically -->
                 </div>
             </div>
         </div>
-        
+
         <div class="controls-hint hide-mobile">
-            <span class="key">A / D</span> Moure &nbsp;&nbsp;|&nbsp;&nbsp; 
-            <span class="key">W / Espai</span> Saltar &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <span class="key">A / D</span> Moure &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span class="key">W / Espai</span> Saltar &nbsp;&nbsp;|&nbsp;&nbsp;
             <span class="key">Click/Toc</span> Disparar
         </div>
 
         <div id="lorePopup" class="lore-hidden">
             <p id="loreText">Info</p>
         </div>
-        
+
         <div id="actionZone" class="hidden">
             <div id="btnJump" class="touch-btn">SALT</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); text-align:right; position:absolute; bottom: 30px; right:30px;">Toca la pantalla<br>per disparar!</div>
+            <div
+                style="font-size:0.7rem; color:var(--text-muted); text-align:right; position:absolute; bottom: 30px; right:30px;">
+                Toca la pantalla<br>per disparar!</div>
         </div>
+
+        <!-- Minimap -->
+        <canvas id="minimapUi" width="120" height="120"
+            style="position: absolute; bottom: 20px; left: 20px; border-radius: 50%; border: 2px solid rgba(0, 255, 255, 0.4); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(0,255,255,0.2); pointer-events: none; z-index: 10;"></canvas>
     </div>
-    
+
     <!-- Mobile Touch Controls -->
     <div id="touchControls" class="hidden">
         <div id="joystickZone">
@@ -120,7 +138,7 @@
         <div id="winnerDisplay" style="font-size: 2.5rem; font-weight: 900; margin-bottom: 30px;">
             <span id="winName">...</span> GUANYA!
         </div>
-        
+
         <div id="finalLeaderboard" class="player-list" style="margin-bottom: 30px; min-width: 300px;">
             <!-- final stats -->
         </div>
@@ -131,4 +149,5 @@
 
     <script src="main.js"></script>
 </body>
+
 </html>
