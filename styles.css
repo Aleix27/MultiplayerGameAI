@@ -29,7 +29,7 @@ html {
     /* Prevent browser handling gestures like pinch zoom/scroll */
 }
 
-canvas {
+#gameCanvas {
     display: block;
     width: 100vw;
     height: 100vh;
@@ -37,6 +37,12 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+#minimapUi {
+    width: 120px !important;
+    height: 120px !important;
+    top: auto !important;
 }
 
 /* Common Overlay Classes */
