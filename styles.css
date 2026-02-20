@@ -40,9 +40,10 @@ html {
 }
 
 #minimapUi {
-    width: 120px !important;
-    height: 120px !important;
+    width: 140px !important;
+    height: 140px !important;
     top: auto !important;
+    left: auto !important;
 }
 
 /* Common Overlay Classes */
@@ -290,7 +291,7 @@ button:hover {
 
 /* Active touch elements need pointer-events */
 #joystickZone,
-#actionZone {
+#mobileActionZone {
     pointer-events: auto;
 }
 
@@ -301,7 +302,14 @@ button:hover {
     justify-content: center;
     align-items: center;
     position: relative;
-    /* Move slightly up on mobile */
+    margin-bottom: 20px;
+}
+
+#mobileActionZone {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
     margin-bottom: 20px;
 }
 
@@ -394,28 +402,32 @@ button:hover {
 }
 
 .touch-btn {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(32, 227, 178, 0.3);
+    background: rgba(32, 227, 178, 0.15);
+    border: 2px solid rgba(32, 227, 178, 0.5);
     color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: 700;
-    font-size: 0.8rem;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
     backdrop-filter: blur(5px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 15px rgba(32, 227, 178, 0.2);
     user-select: none;
     -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: all 0.15s ease;
 }
 
 .touch-btn:active,
 .touch-btn.active {
-    background: rgba(32, 227, 178, 0.4);
-    box-shadow: 0 0 20px var(--primary-glow);
-    transform: scale(0.9);
+    background: rgba(32, 227, 178, 0.5);
+    box-shadow: 0 0 30px var(--primary-glow);
+    transform: scale(0.88);
+    border-color: var(--primary);
 }
 
 /* Mobile responsive rules */
@@ -506,13 +518,27 @@ button:hover {
 
 /* Win Screen specific */
 #winScreen h2 {
-    font-size: 4rem;
-    margin: 0 0 20px 0;
+    font-size: 3.5rem;
+    margin: 0 0 15px 0;
     background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 20px rgba(253, 160, 133, 0.6));
     text-align: center;
+    animation: winPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes winPulse {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 20px rgba(253, 160, 133, 0.6));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 40px rgba(253, 160, 133, 0.9));
+    }
 }
 
 #winScreen p {
