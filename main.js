@@ -98,6 +98,15 @@ function setupConnection(conn) {
     });
 
     conn.on('data', (data) => {
+        // Relay messages: Host acts as a central server for all other clients
+        if (gameState.isHost && data.type !== 'init') {
+            for (let c of connections) {
+                if (c.open && c.peer !== conn.peer) {
+                    c.send(data);
+                }
+            }
+        }
+
         if (data.type === 'init') {
             remotePlayers[data.id] = { name: data.name, color: data.color, x: -9999, y: -9999, targetX: -9999, targetY: -9999, hp: 100, facing: { x: 1, y: 0 } };
             gameState.scores[data.id] = 0;
@@ -114,6 +123,12 @@ function setupConnection(conn) {
         }
         else if (data.type === 'lobby_sync') {
             lobbyPlayers = data.list;
+            for (let lp of lobbyPlayers) {
+                if (lp.id !== gameState.playerId && !remotePlayers[lp.id]) {
+                    remotePlayers[lp.id] = { name: lp.name, color: lp.color, x: -9999, y: -9999, targetX: -9999, targetY: -9999, hp: 100, facing: { x: 1, y: 0 } };
+                    gameState.scores[lp.id] = 0;
+                }
+            }
             updateLobbyUI();
         }
         else if (data.type === 'settings') {
@@ -940,9 +955,21 @@ function update() {
         // Bullet hits local player
         if (b.ownerId !== gameState.playerId && player.hp > 0 && player.iFrames <= 0) {
             if (dist(b, player) < player.radius + 15) {
-                hitSomething = true; player.hp -= 34; playSound('hit'); triggerHaptic('hit');
+                hitSomething = true; player.hp -= 34; player.iFrames = 10; playSound('hit'); triggerHaptic('hit');
                 spawnExplosion(player.x, player.y, b.color, 25, 6, true); gameState.screenShake = 5;
                 if (player.hp <= 0) { broadcast({ type: 'kill', killerId: b.ownerId, deadId: gameState.playerId }); die(); }
+            }
+        }
+
+        // Visually destroy bullet if it hits a remote player (Victim calculates the actual damage on their browser)
+        if (b.ownerId === gameState.playerId) {
+            for (let rid in remotePlayers) {
+                let rp = remotePlayers[rid];
+                if (rp.hp > 0 && dist(b, rp) < 25 + 15) {
+                    hitSomething = true;
+                    spawnExplosion(rp.x, rp.y, b.color, 15, 6, true);
+                    break;
+                }
             }
         }
 
