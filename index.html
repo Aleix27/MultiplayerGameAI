@@ -1,67 +1,110 @@
 <!DOCTYPE html>
 <html lang="ca">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Mobile App Headers -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Lumina Keeper</title>
+    <title>Lumina Arena PVP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <!-- PeerJS for WebRTC Multiplayer -->
+    <!-- WebRTC PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
-
 <body>
     <canvas id="gameCanvas"></canvas>
 
-    <!-- Cinematic Intro & Lobby -->
+    <!-- Pre-Lobby: Profile Setup -->
     <div id="introScreen" class="overlay">
-        <h1>Lumina Keeper</h1>
-        <p class="tagline">L'essència del cosmos s'ha trencat pel Buit.</p>
-        <p class="tagline">Ets l'última espurna. Torna a encendre la galàxia.</p>
-
+        <h1>Lumina Arena</h1>
+        <p class="tagline">Tria el teu perfil abans d'entrar a la sorra.</p>
+        
+        <div id="profileSetup" class="setup-container">
+            <input type="text" id="nicknameInput" placeholder="El teu Nickname..." maxlength="12">
+            
+            <p style="margin: 15px 0 5px 0; font-size: 1.1rem;">Selecciona Color:</p>
+            <div id="colorSelector" class="color-options">
+                <div class="color-btn active" data-color="#00ffff" style="background-color: #00ffff; box-shadow: 0 0 10px #00ffff;"></div>
+                <div class="color-btn" data-color="#ff00ff" style="background-color: #ff00ff;"></div>
+                <div class="color-btn" data-color="#ffff00" style="background-color: #ffff00;"></div>
+                <div class="color-btn" data-color="#ff5500" style="background-color: #ff5500;"></div>
+                <div class="color-btn" data-color="#00ff88" style="background-color: #00ff88;"></div>
+            </div>
+        </div>
+        
         <div id="lobbyOptions" class="button-group">
-            <button id="startBtn">Jugar Sol</button>
             <button id="hostBtn">Crear Partida (Host)</button>
             <button id="joinBtn">Unir-se (Join)</button>
         </div>
-
-        <div id="lobbyRoom" class="hidden">
-            <h2 id="roomTitle">La teva sala: <span id="roomIdDisplay" style="color:var(--primary)">...</span></h2>
-            <p class="small-text">Comparteix aquest codi amb els teus amics.</p>
-            <button id="startGameHostBtn" class="hidden">Començar Partida</button>
-        </div>
-
+        
+        <!-- Join input -->
         <div id="joinRoom" class="hidden">
-            <input type="text" id="joinInput" placeholder="Codi de sala">
-            <button id="connectBtn">Connectar</button>
-            <p id="joinStatus" class="small-text"></p>
+            <input type="text" id="joinInput" placeholder="Introdueix codi...">
+            <button id="connectBtn" style="margin-top:15px;">Connectar</button>
+            <div id="joinStatus" class="small-text" style="color:#0cebeb; margin-top:10px;"></div>
         </div>
+    </div>
+
+    <!-- Lobby: Waiting Room -->
+    <div id="lobbyRoom" class="overlay hidden">
+        <h2>Sala d'Espera</h2>
+        <div class="room-info">
+            Codi de Sala: <span id="roomIdDisplay">...</span>
+        </div>
+        
+        <div id="matchOptions" class="setup-container hidden-guest">
+            <p style="margin-bottom: 5px;">Temps de partida:</p>
+            <select id="timeSelectInput">
+                <option value="60">1 Minut</option>
+                <option value="120" selected>2 Minuts</option>
+                <option value="300">5 Minuts</option>
+            </select>
+        </div>
+
+        <div id="playerListContainer" class="player-list">
+            <!-- Player tags dynamically appended here -->
+        </div>
+
+        <button id="startGameHostBtn" class="hidden-guest" style="margin-top: 30px;">Començar Partida</button>
+        <p id="guestWaitText" class="tagline hidden-host" style="margin-top: 30px;">Esperant que el Host comenci...</p>
     </div>
 
     <!-- Gameplay UI -->
     <div id="ui" class="hidden">
-        <div class="header">
-            <h1 class="ingame-title">Lumina Arena</h1>
-            <div id="pvpScoreboard" style="display:flex; flex-direction:column; gap: 5px; margin-top: 10px;">
-                <!-- Player scores appended here dynamically -->
+        <div class="header" style="flex-direction: row; justify-content: space-between; width: 100%;">
+            <!-- Left Header -->
+            <div>
+                <h1 class="ingame-title">Lumina Arena</h1>
+                <div id="timerDisplay" style="font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px #ff0055; margin-top: 5px;">02:00</div>
             </div>
-            <div id="netStatus" class="small-text" style="color:#0cebeb; margin-top:5px; text-shadow:none;"></div>
+            
+            <!-- Right Header: Leaderboard -->
+            <div style="display:flex; flex-direction:column; align-items: flex-end;">
+                <div style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Rànquing</div>
+                <div id="pvpScoreboard" style="display:flex; flex-direction:column; gap: 5px; align-items: flex-end;">
+                    <!-- Player scores appended here dynamically -->
+                </div>
+            </div>
         </div>
-
+        
         <div class="controls-hint hide-mobile">
-            <span class="key">A / D</span> Moure &nbsp;&nbsp;|&nbsp;&nbsp;
-            <span class="key">W / Espai</span> Saltar &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span class="key">A / D</span> Moure &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <span class="key">W / Espai</span> Saltar &nbsp;&nbsp;|&nbsp;&nbsp; 
             <span class="key">Click/Toc</span> Disparar
         </div>
 
         <div id="lorePopup" class="lore-hidden">
-            <p id="loreText">...</p>
+            <p id="loreText">Info</p>
+        </div>
+        
+        <div id="actionZone" class="hidden">
+            <div id="btnJump" class="touch-btn">SALT</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); text-align:right; position:absolute; bottom: 30px; right:30px;">Toca la pantalla<br>per disparar!</div>
         </div>
     </div>
-
+    
     <!-- Mobile Touch Controls -->
     <div id="touchControls" class="hidden">
         <div id="joystickZone">
@@ -69,23 +112,23 @@
                 <div id="joystickKnob"></div>
             </div>
         </div>
-        <div id="actionZone">
-            <div id="btnJump" class="touch-btn">SALT</div>
-            <div
-                style="font-size:0.7rem; color:var(--text-muted); text-align:right; position:absolute; bottom: 30px; right:30px;">
-                Toca la pantalla<br>per disparar!</div>
-        </div>
     </div>
 
-    <!-- Win Screen -->
+    <!-- Win Screen overlay -->
     <div id="winScreen" class="overlay hidden">
-        <h2>La Galàxia Respira</h2>
-        <p>Has reunit tota la llum.</p>
-        <p class="small-text">L'Equilibri s'ha restaurat.</p>
-        <button onclick="location.reload()">Reviure el Cicle</button>
+        <h2>Fi de la Partida</h2>
+        <div id="winnerDisplay" style="font-size: 2.5rem; font-weight: 900; margin-bottom: 30px;">
+            <span id="winName">...</span> GUANYA!
+        </div>
+        
+        <div id="finalLeaderboard" class="player-list" style="margin-bottom: 30px; min-width: 300px;">
+            <!-- final stats -->
+        </div>
+
+        <button id="postMatchBtn" class="hidden-guest">Nova Partida / Tornar a la Sala</button>
+        <p class="tagline hidden-host">El host està decidint el proper pas...</p>
     </div>
 
     <script src="main.js"></script>
 </body>
-
 </html>
