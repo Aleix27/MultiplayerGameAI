@@ -1,0 +1,396 @@
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove mobile tap highlight */
+}
+
+:root {
+    --primary: #20e3b2;
+    --primary-glow: rgba(32, 227, 178, 0.6);
+    --secondary: #0cebeb;
+    --void: #030308;
+    --text-main: #f0f0ff;
+    --text-muted: #a0a0c0;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--void);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    /* Prevent browser handling gestures like pinch zoom/scroll */
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Common Overlay Classes */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, rgba(10, 15, 30, 0.8) 0%, rgba(3, 3, 8, 1) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 50;
+    transition: opacity 1s ease-in-out;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 5rem;
+    margin: 0 0 20px 0;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #fff 0%, var(--secondary) 50%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px var(--primary-glow));
+    text-align: center;
+}
+
+.tagline {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin: 5px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    opacity: 0.9;
+    text-align: center;
+}
+
+/* Lobby Styling */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 40px;
+    align-items: center;
+}
+
+#joinRoom {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+input[type="text"] {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: #fff;
+    font-family: 'Outfit';
+    font-size: 1.2rem;
+    text-align: center;
+    outline: none;
+}
+
+button {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--void);
+    background: linear-gradient(90deg, var(--secondary), var(--primary));
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 20px var(--primary-glow);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    width: 250px;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px var(--primary-glow);
+}
+
+/* In-Game UI */
+#ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px;
+    transition: opacity 1s ease;
+}
+
+#ui.hidden {
+    opacity: 0;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.ingame-title {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+    letter-spacing: 2px;
+    filter: drop-shadow(0 0 5px var(--primary-glow));
+}
+
+#score {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+#score span {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+#energyBarContainer {
+    width: 200px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    margin-top: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+}
+
+#energyBar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #0cebeb, #20e3b2);
+    box-shadow: 0 0 10px var(--primary-glow);
+    transition: width 0.1s linear;
+}
+
+.controls-hint {
+    align-self: flex-start;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.controls-hint .key {
+    color: #fff;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Lore Popup */
+#lorePopup {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 15, 25, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid var(--secondary);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 20px 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.lore-hidden {
+    opacity: 0;
+    transform: translate(-50%, 20px) !important;
+}
+
+#loreText {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Touch Controls */
+#touchControls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    z-index: 20;
+    pointer-events: none;
+    /* Let touches pass through the container */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 20px 40px;
+}
+
+/* Active touch elements need pointer-events */
+#joystickZone,
+#actionZone {
+    pointer-events: auto;
+}
+
+#joystickZone {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    /* Move slightly up on mobile */
+    margin-bottom: 20px;
+}
+
+#joystickBase {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(32, 227, 178, 0.3);
+    position: relative;
+    backdrop-filter: blur(5px);
+}
+
+#joystickKnob {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--secondary), var(--primary));
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px var(--primary-glow);
+    transition: transform 0.1s ease-out;
+}
+
+#actionZone {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.touch-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(32, 227, 178, 0.3);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.touch-btn:active,
+.touch-btn.active {
+    background: rgba(32, 227, 178, 0.4);
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: scale(0.9);
+}
+
+/* Mobile responsive rules */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 3rem;
+    }
+
+    .tagline {
+        font-size: 1.1rem;
+    }
+
+    .hide-mobile {
+        display: none !important;
+    }
+
+    #ui {
+        padding: 15px;
+    }
+
+    #touchControls {
+        /* Remove explicit hide if on mobile, will be toggled by JS based on touch detect instead but this helps lay out */
+        padding: 10px 20px;
+    }
+}
+
+/* Win Screen specific */
+#winScreen h2 {
+    font-size: 4rem;
+    margin: 0 0 20px 0;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(253, 160, 133, 0.6));
+    text-align: center;
+}
+
+#winScreen p {
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.small-text {
+    font-size: 1.2rem !important;
+    color: var(--text-muted);
+}

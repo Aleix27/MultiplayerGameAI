@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Lumina Keeper</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <!-- PeerJS for WebRTC Multiplayer -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Cinematic Intro & Lobby -->
+    <div id="introScreen" class="overlay">
+        <h1>Lumina Keeper</h1>
+        <p class="tagline">L'essència del cosmos s'ha trencat pel Buit.</p>
+        <p class="tagline">Ets l'última espurna. Torna a encendre la galàxia.</p>
+
+        <div id="lobbyOptions" class="button-group">
+            <button id="startBtn">Jugar Sol</button>
+            <button id="hostBtn">Crear Partida (Host)</button>
+            <button id="joinBtn">Unir-se (Join)</button>
+        </div>
+
+        <div id="lobbyRoom" class="hidden">
+            <h2 id="roomTitle">La teva sala: <span id="roomIdDisplay" style="color:var(--primary)">...</span></h2>
+            <p class="small-text">Comparteix aquest codi amb els teus amics.</p>
+            <button id="startGameHostBtn" class="hidden">Començar Partida</button>
+        </div>
+
+        <div id="joinRoom" class="hidden">
+            <input type="text" id="joinInput" placeholder="Codi de sala">
+            <button id="connectBtn">Connectar</button>
+            <p id="joinStatus" class="small-text"></p>
+        </div>
+    </div>
+
+    <!-- Gameplay UI -->
+    <div id="ui" class="hidden">
+        <div class="header">
+            <h1 class="ingame-title">Lumina Arena</h1>
+            <div id="pvpScoreboard" style="display:flex; flex-direction:column; gap: 5px; margin-top: 10px;">
+                <!-- Player scores appended here dynamically -->
+            </div>
+            <div id="netStatus" class="small-text" style="color:#0cebeb; margin-top:5px; text-shadow:none;"></div>
+        </div>
+
+        <div class="controls-hint hide-mobile">
+            <span class="key">A / D</span> Moure &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span class="key">W / Espai</span> Saltar &nbsp;&nbsp;|&nbsp;&nbsp;
+            <span class="key">Shift</span> Disparar
+        </div>
+
+        <div id="lorePopup" class="lore-hidden">
+            <p id="loreText">...</p>
+        </div>
+    </div>
+
+    <!-- Mobile Touch Controls -->
+    <div id="touchControls" class="hidden">
+        <div id="joystickZone">
+            <div id="joystickBase">
+                <div id="joystickKnob"></div>
+            </div>
+        </div>
+        <div id="actionZone">
+            <div id="btnShoot" class="touch-btn" style="border-color:#ff0055; box-shadow: 0 0 10px rgba(255,0,85,0.5);">
+                DISPAR</div>
+            <div id="btnJump" class="touch-btn">SALT</div>
+        </div>
+    </div>
+
+    <!-- Win Screen -->
+    <div id="winScreen" class="overlay hidden">
+        <h2>La Galàxia Respira</h2>
+        <p>Has reunit tota la llum.</p>
+        <p class="small-text">L'Equilibri s'ha restaurat.</p>
+        <button onclick="location.reload()">Reviure el Cicle</button>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
