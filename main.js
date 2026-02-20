@@ -294,7 +294,9 @@ document.getElementById('hostBtn').addEventListener('click', () => {
     initPeer(true, shortId);
 });
 document.getElementById('joinBtn').addEventListener('click', () => {
-    document.getElementById('introScreen').classList.add('hidden');
+    document.getElementById('profileSetup').classList.add('hidden');
+    document.getElementById('lobbyOptions').classList.add('hidden');
+    document.getElementById('netStatus').classList.add('hidden');
     document.getElementById('joinRoom').classList.remove('hidden');
 });
 document.getElementById('connectBtn').addEventListener('click', () => {
