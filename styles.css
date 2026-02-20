@@ -61,6 +61,8 @@ html {
     -webkit-backdrop-filter: blur(8px);
     z-index: 50;
     transition: opacity 1s ease-in-out;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .overlay.hidden {
@@ -139,6 +141,7 @@ button {
     text-transform: uppercase;
     letter-spacing: 2px;
     width: 250px;
+    touch-action: manipulation;
 }
 
 button:hover {
@@ -436,6 +439,68 @@ button:hover {
     #touchControls {
         /* Remove explicit hide if on mobile, will be toggled by JS based on touch detect instead but this helps lay out */
         padding: 10px 20px;
+    }
+}
+
+/* Landscape Mobile Height Constraints */
+@media screen and (max-height: 500px) {
+    h1 {
+        font-size: 2.5rem;
+        margin: 5px 0 10px 0;
+    }
+
+    .tagline {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .setup-container {
+        margin-top: 5px;
+        padding: 10px;
+        width: 90%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #nicknameInput {
+        width: 140px;
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    .color-label {
+        display: none !important;
+    }
+
+    .color-options {
+        margin: 0;
+    }
+
+    .button-group {
+        margin-top: 10px;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    button {
+        width: auto;
+        padding: 8px 15px;
+        font-size: 1rem;
+    }
+
+    #joinRoom {
+        margin-top: 10px;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    #joinInput {
+        width: 120px;
+        padding: 8px;
+        font-size: 1rem;
     }
 }
 
